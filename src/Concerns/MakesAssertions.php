@@ -3,7 +3,6 @@
 namespace Laravel\Dusk\Concerns;
 
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 
@@ -38,14 +37,18 @@ trait MakesAssertions
     }
 
     /**
-     * Assert that the current URL path matches the given path.
+     * Assert that the current URL path matches the given pattern.
      *
      * @param  string  $path
      * @return $this
      */
     public function assertPathIs($path)
     {
-        PHPUnit::assertEquals($path, parse_url(
+        $pattern = preg_quote($path, '/');
+
+        $pattern = str_replace('\*', '.*', $pattern);
+
+        PHPUnit::assertRegExp('/^'.$pattern.'/u', parse_url(
             $this->driver->getCurrentURL()
         )['path']);
 
@@ -365,7 +368,7 @@ trait MakesAssertions
     {
         $this->ensurejQueryIsAvailable();
 
-        $selector = trim($this->resolver->format("a:contains('{$link}')"));
+        $selector = addslashes(trim($this->resolver->format("a:contains('{$link}')")));
 
         $script = <<<JS
             var link = jQuery.find("{$selector}");
@@ -373,66 +376,6 @@ trait MakesAssertions
 JS;
 
         return $this->driver->executeScript($script);
-    }
-    
-    /**
-     * Assert that the given button is visible.
-     *
-     * @param  string  $button
-     * @return $this
-     */
-    public function assertSeeButton($button)
-    {
-        if ($this->resolver->prefix) {
-            $message = "Did not see expected button [{$button}] within [{$this->resolver->prefix}].";
-        } else {
-            $message = "Did not see expected button [{$button}].";
-        }
-
-        try {
-            $element = $this->resolver->resolveForButtonPress($button);
-        } catch (InvalidArgumentException $exception) {
-            $element = null;
-        } catch (NoSuchElementException $exception) {
-            $element = null;
-        }
-
-        PHPUnit::assertNotNull(
-            $element,
-            $message
-        );
-
-        return $this;
-    }
-
-    /**
-     * Assert that the given button is not visible.
-     *
-     * @param  string  $button
-     * @return $this
-     */
-    public function assertDontSeeButton($button)
-    {
-        if ($this->resolver->prefix) {
-            $message = "Saw unexpected button [{$button}] within [{$this->resolver->prefix}].";
-        } else {
-            $message = "Saw unexpected expected button [{$button}].";
-        }
-
-        try {
-            $element = $this->resolver->resolveForButtonPress($button);
-        } catch (InvalidArgumentException $exception) {
-            $element = null;
-        } catch (NoSuchElementException $exception) {
-            $element = null;
-        }
-
-        PHPUnit::assertTrue(
-            $element == null,
-            $message
-        );
-
-        return $this;
     }
 
     /**
