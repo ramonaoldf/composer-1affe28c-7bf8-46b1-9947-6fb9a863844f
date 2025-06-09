@@ -274,11 +274,12 @@ JS;
      * Assert that the given checkbox field is checked.
      *
      * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
-    public function assertChecked($field)
+    public function assertChecked($field, $value = null)
     {
-        $element = $this->resolver->resolveForChecking($field);
+        $element = $this->resolver->resolveForChecking($field, $value);
 
         PHPUnit::assertTrue(
             $element->isSelected(),
@@ -292,11 +293,12 @@ JS;
      * Assert that the given checkbox field is not checked.
      *
      * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
-    public function assertNotChecked($field)
+    public function assertNotChecked($field, $value = null)
     {
-        $element = $this->resolver->resolveForChecking($field);
+        $element = $this->resolver->resolveForChecking($field, $value);
 
         PHPUnit::assertFalse(
             $element->isSelected(),
@@ -405,6 +407,21 @@ JS;
         }
 
         PHPUnit::assertTrue($missing, "Saw unexpected element [{$fullSelector}].");
+
+        return $this;
+    }
+
+    /**
+     * Assert that a JavaScript dialog with given message has been opened.
+     *
+     * @param  string  $message
+     * @return $this
+     */
+    public function assertDialogOpened($message)
+    {
+        PHPUnit::assertEquals(
+            $message, $this->driver->switchTo()->alert()->getText()
+        );
 
         return $this;
     }

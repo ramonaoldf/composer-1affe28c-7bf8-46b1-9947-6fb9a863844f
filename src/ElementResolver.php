@@ -85,7 +85,7 @@ class ElementResolver
         }
 
         return $this->firstOrFail([
-            $field, "input[name={$field}]", "textarea[name={$field}]"
+            $field, "input[name='{$field}']", "textarea[name='{$field}']"
         ]);
     }
 
@@ -102,7 +102,7 @@ class ElementResolver
         }
 
         return $this->firstOrFail([
-            $field, "select[name={$field}]"
+            $field, "select[name='{$field}']"
         ]);
     }
 
@@ -119,8 +119,14 @@ class ElementResolver
             return $element;
         }
 
+        if (is_null($value)) {
+            throw new InvalidArgumentException(
+                "No value was provided for radio button [{$field}]."
+            );
+        }
+
         return $this->firstOrFail([
-            $field, "input[type=radio][name={$field}][value={$value}]"
+            $field, "input[type=radio][name='{$field}'][value='{$value}']"
         ]);
     }
 
@@ -128,16 +134,23 @@ class ElementResolver
      * Resolve the element for a given checkbox "field".
      *
      * @param  string  $field
+     * @param  string  $value
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
      */
-    public function resolveForChecking($field)
+    public function resolveForChecking($field, $value = null)
     {
         if (! is_null($element = $this->findById($field))) {
             return $element;
         }
 
+        $selector = "input[type=checkbox][name='{$field}']";
+
+        if (! is_null($value)) {
+            $selector .= "[value='{$value}']";
+        }
+
         return $this->firstOrFail([
-            $field, "input[type=checkbox][name={$field}]"
+            $field, $selector
         ]);
     }
 
@@ -154,7 +167,7 @@ class ElementResolver
         }
 
         return $this->firstOrFail([
-            $field, "input[type=file][name={$field}]"
+            $field, "input[type=file][name='{$field}']"
         ]);
     }
 
@@ -198,8 +211,8 @@ class ElementResolver
      */
     protected function findButtonByName($button)
     {
-        if (! is_null($element = $this->find("input[type=submit][name={$button}]")) ||
-            ! is_null($element = $this->find("button[name={$button}]"))) {
+        if (! is_null($element = $this->find("input[type=submit][name='{$button}']")) ||
+            ! is_null($element = $this->find("button[name='{$button}']"))) {
             return $element;
         }
     }
