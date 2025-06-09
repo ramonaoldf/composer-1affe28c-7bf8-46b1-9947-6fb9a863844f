@@ -2,6 +2,7 @@
 
 namespace Laravel\Dusk\Console;
 
+use Dotenv\Dotenv;
 use Illuminate\Console\Command;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
@@ -66,7 +67,7 @@ class DuskCommand extends Command
      */
     protected function binary()
     {
-        return PHP_OS === 'WINNT' ? base_path('vendor\bin\phpunit.bat') : PHP_BINARY;
+        return PHP_OS === 'WINNT' ? base_path('vendor\bin\phpunit.bat') : 'vendor/bin/phpunit';
     }
 
     /**
@@ -76,13 +77,7 @@ class DuskCommand extends Command
      */
     protected function phpunitArguments($options)
     {
-        $executable = [];
-
-        if (PHP_OS !== 'WINNT') {
-            $executable = ['vendor/bin/phpunit'];
-        }
-
-        return array_merge($executable, [
+        return array_merge([], [
             '-c', base_path('phpunit.dusk.xml'), $options
         ]);
     }
@@ -113,6 +108,8 @@ class DuskCommand extends Command
     {
         if (file_exists(base_path($this->duskFile()))) {
             $this->backupEnvironment();
+
+            $this->refreshEnvironment();
         }
 
         $this->writeConfiguration();
@@ -148,6 +145,16 @@ class DuskCommand extends Command
         copy(base_path('.env.backup'), base_path('.env'));
 
         unlink(base_path('.env.backup'));
+    }
+
+    /**
+     * Refresh the current environment variables.
+     *
+     * @return void
+     */
+    protected function refreshEnvironment()
+    {
+        (new Dotenv(base_path()))->overload();
     }
 
     /**
