@@ -46,6 +46,21 @@ trait InteractsWithElements
     }
 
     /**
+     * Right click the element at the given selector.
+     *
+     * @param  string  $selector
+     * @return $this
+     */
+    public function rightClick($selector)
+    {
+        (new WebDriverActions($this->driver))->contextClick(
+            $this->resolver->findOrFail($selector)
+        )->perform();
+
+        return $this;
+    }
+
+    /**
      * Click the link with the given text.
      *
      * @param  string  $link
@@ -170,23 +185,29 @@ trait InteractsWithElements
     }
 
     /**
-     * Select the given value of a drop-down field.
+     * Select the given value or random value of a drop-down field.
      *
      * @param  string  $field
      * @param  string  $value
      * @return $this
      */
-    public function select($field, $value)
+    public function select($field, $value = null)
     {
         $element = $this->resolver->resolveForSelection($field);
 
         $options = $element->findElements(WebDriverBy::tagName('option'));
 
-        foreach ($options as $option) {
-            if ($option->getAttribute('value') === $value) {
-                $option->click();
+        if (is_null($value)) {
+            $options[array_rand($options)]->click();
+        }
 
-                break;
+        else {
+            foreach ($options as $option) {
+                if ($option->getAttribute('value') === $value) {
+                    $option->click();
+
+                    break;
+                }
             }
         }
 
