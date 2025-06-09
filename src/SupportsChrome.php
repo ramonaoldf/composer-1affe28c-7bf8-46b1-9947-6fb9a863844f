@@ -3,6 +3,7 @@
 namespace Laravel\Dusk;
 
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
 
 trait SupportsChrome
 {
@@ -18,11 +19,7 @@ trait SupportsChrome
      */
     public static function startChromeDriver()
     {
-        if (PHP_OS === 'Darwin') {
-            static::$chromeProcess = new Process('./chromedriver-mac', realpath(__DIR__.'/../bin'), null, null, null);
-        } else {
-            static::$chromeProcess = new Process('./chromedriver-linux', realpath(__DIR__.'/../bin'), ['DISPLAY' => ':0'], null, null);
-        }
+        static::$chromeProcess = static::buildChromeProcess();
 
         static::$chromeProcess->start();
 
@@ -40,6 +37,50 @@ trait SupportsChrome
     {
         if (static::$chromeProcess) {
             static::$chromeProcess->stop();
+        }
+    }
+
+    /**
+     * Build the process to run the Chromedriver.
+     *
+     * @return \Symfony\Component\Process\Process
+     */
+    protected static function buildChromeProcess()
+    {
+        return (new ProcessBuilder())
+                ->setPrefix(realpath(__DIR__.'/../bin/chromedriver-'.static::driverSuffix()))
+                ->getProcess()
+                ->setEnv(static::chromeEnvironment());
+    }
+
+    /**
+     * Get the Chromedriver environment variables.
+     *
+     * @return array
+     */
+    protected static function chromeEnvironment()
+    {
+        if (PHP_OS === 'Darwin' || PHP_OS === 'WINNT') {
+            return [];
+        }
+
+        return ['DISPLAY' => ':0'];
+    }
+
+    /**
+     * Get the suffix for the Chromedriver binary.
+     *
+     * @return string
+     */
+    protected static function driverSuffix()
+    {
+        switch (PHP_OS) {
+            case 'Darwin':
+                return 'mac';
+            case 'WINNT':
+                return 'win.exe';
+            default:
+                return 'linux';
         }
     }
 }
