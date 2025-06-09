@@ -223,7 +223,7 @@ trait MakesAssertions
      * Assert that the given query string parameter is present.
      *
      * @param  string  $name
-     * @return array
+     * @return $this
      */
     protected function assertHasQueryStringParameter($name)
     {
@@ -241,7 +241,7 @@ trait MakesAssertions
             "Did not see expected query string parameter [{$name}] in [".$this->driver->getCurrentURL()."]."
         );
 
-        return $output;
+        return $this;
     }
 
     /**
@@ -728,6 +728,24 @@ JS;
         PHPUnit::assertTrue(
             $this->resolver->findOrFail($selector)->isDisplayed(),
             "Element [{$fullSelector}] is not visible."
+        );
+
+        return $this;
+    }
+    
+    /**
+     * Assert that the element with the given selector is present in the DOM.
+     *
+     * @param  string  $selector
+     * @return $this
+     */
+    public function assertPresent($selector)
+    {
+        $fullSelector = $this->resolver->format($selector);
+
+        PHPUnit::assertTrue(
+            count($this->resolver->find($selector)) > 0,
+            "Element [{$fullSelector}] is not present."
         );
 
         return $this;
