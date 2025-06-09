@@ -24,6 +24,13 @@ class DuskCommand extends Command
      */
     protected $description = 'Run the Dusk tests for the application';
 
+    /*
+     * Indicates if the project has its own PHPUnit configuration.
+     *
+     * @var boolean
+     */
+    protected $hasPhpUnitConfiguration = false;
+
     /**
      * Create a new command instance.
      *
@@ -105,7 +112,9 @@ class DuskCommand extends Command
     protected function withDuskEnvironment($callback)
     {
         if (file_exists(base_path($this->duskFile()))) {
-            $this->backupEnvironment();
+            if (file_get_contents(base_path('.env')) !== file_get_contents(base_path($this->duskFile()))) {
+                $this->backupEnvironment();
+            }
 
             $this->refreshEnvironment();
         }
@@ -115,7 +124,7 @@ class DuskCommand extends Command
         return tap($callback(), function () {
             $this->removeConfiguration();
 
-            if (file_exists(base_path($this->duskFile()))) {
+            if (file_exists(base_path($this->duskFile())) && file_exists(base_path('.env.backup'))) {
                 $this->restoreEnvironment();
             }
         });
@@ -162,7 +171,11 @@ class DuskCommand extends Command
      */
     protected function writeConfiguration()
     {
-        copy(realpath(__DIR__.'/../../stubs/phpunit.xml'), base_path('phpunit.dusk.xml'));
+        if (! file_exists($file = base_path('phpunit.dusk.xml'))) {
+            copy(realpath(__DIR__.'/../../stubs/phpunit.xml'), $file);
+        } else {
+            $this->hasPhpUnitConfiguration = true;
+        }
     }
 
     /**
@@ -172,7 +185,9 @@ class DuskCommand extends Command
      */
     protected function removeConfiguration()
     {
-        unlink(base_path('phpunit.dusk.xml'));
+        if (! $this->hasPhpUnitConfiguration) {
+            unlink(base_path('phpunit.dusk.xml'));
+        }
     }
 
     /**
