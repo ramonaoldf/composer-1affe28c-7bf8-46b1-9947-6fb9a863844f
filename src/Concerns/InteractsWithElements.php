@@ -211,11 +211,12 @@ trait InteractsWithElements
      * Check the given checkbox.
      *
      * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
-    public function check($field)
+    public function check($field, $value = null)
     {
-        $element = $this->resolver->resolveForChecking($field);
+        $element = $this->resolver->resolveForChecking($field, $value);
 
         if (! $element->isSelected()) {
             $element->click();
@@ -228,11 +229,12 @@ trait InteractsWithElements
      * Uncheck the given checkbox.
      *
      * @param  string  $field
+     * @param  string  $value
      * @return $this
      */
-    public function uncheck($field)
+    public function uncheck($field, $value = null)
     {
-        $element = $this->resolver->resolveForChecking($field);
+        $element = $this->resolver->resolveForChecking($field, $value);
 
         if ($element->isSelected()) {
             $element->click();
@@ -300,6 +302,30 @@ trait InteractsWithElements
         (new WebDriverActions($this->driver))->dragAndDrop(
             $this->resolver->findOrFail($from), $this->resolver->findOrFail($to)
         )->perform();
+
+        return $this;
+    }
+
+    /**
+     * Accept a JavaScript dialog.
+     *
+     * @return $this
+     */
+    public function acceptDialog()
+    {
+        $this->driver->switchTo()->alert()->accept();
+
+        return $this;
+    }
+
+    /**
+     * Dismiss a JavaScript dialog.
+     *
+     * @return $this
+     */
+    public function dismissDialog()
+    {
+        $this->driver->switchTo()->alert()->dismiss();
 
         return $this;
     }
