@@ -5,6 +5,7 @@ namespace Laravel\Dusk\Console;
 use Illuminate\Console\Command;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
 
 class DuskCommand extends Command
 {
@@ -46,12 +47,43 @@ class DuskCommand extends Command
         $options = implode(' ', array_slice($_SERVER['argv'], 2));
 
         $this->withDuskEnvironment(function () use ($options) {
-            (new Process(trim(PHP_BINARY.' vendor/bin/phpunit -c "'.base_path('phpunit.dusk.xml').'" '.$options), base_path(), []))
-                    ->setTty(true)
-                    ->run(function ($type, $line) {
-                        $this->output->write($line);
-                    });
+            (new ProcessBuilder())
+                ->setPrefix($this->binary())
+                ->setArguments($this->phpunitArguments($options))
+                ->getProcess()
+                ->setTty(PHP_OS !== 'WINNT')
+                ->run(function ($type, $line) {
+                    $this->output->write($line);
+                });
         });
+    }
+
+    /**
+     * Get the PHP binary to execute.
+     *
+     * @return string
+     */
+    protected function binary()
+    {
+        return PHP_OS === 'WINNT' ? base_path('vendor\bin\phpunit.bat') : PHP_BINARY;
+    }
+
+    /**
+     * Get the array of arguments for running PHPUnit.
+     *
+     * @return array
+     */
+    protected function phpunitArguments($options)
+    {
+        $executable = [];
+
+        if (PHP_OS !== 'WINNT') {
+            $executable = ['vendor/bin/phpunit'];
+        }
+
+        return array_merge($executable, [
+            '-c', base_path('phpunit.dusk.xml'), $options
+        ]);
     }
 
     /**
@@ -147,7 +179,7 @@ class DuskCommand extends Command
         if (file_exists(base_path($file = '.env.dusk.'.$this->laravel->environment()))) {
             return $file;
         }
-        
+
         return '.env.dusk';
     }
 }
