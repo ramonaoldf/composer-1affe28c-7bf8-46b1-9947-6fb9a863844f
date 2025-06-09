@@ -33,36 +33,38 @@ class ChromeProcess
     /**
      * Build the process to run Chromedriver.
      *
+     * @param  array  $arguments
      * @return \Symfony\Component\Process\Process
      */
-    public function toProcess()
+    public function toProcess(array $arguments = [])
     {
         if ($this->driver) {
-            return $this->process();
+            return $this->process($arguments);
         }
 
         if ($this->onWindows()) {
             $this->driver = realpath(__DIR__.'/../../bin/chromedriver-win.exe');
 
-            return $this->process();
+            return $this->process($arguments);
         }
 
         $this->driver = $this->onMac()
                         ? realpath(__DIR__.'/../../bin/chromedriver-mac')
                         : realpath(__DIR__.'/../../bin/chromedriver-linux');
 
-        return $this->process();
+        return $this->process($arguments);
     }
 
     /**
      * Build the Chromedriver with Symfony Process.
      *
+     * @param  array  $arguments
      * @return \Symfony\Component\Process\Process
      */
-    protected function process()
+    protected function process(array $arguments = [])
     {
         return (new Process(
-            [realpath($this->driver)], null, $this->chromeEnvironment()
+            array_merge([realpath($this->driver)], $arguments), null, $this->chromeEnvironment()
         ));
     }
 
