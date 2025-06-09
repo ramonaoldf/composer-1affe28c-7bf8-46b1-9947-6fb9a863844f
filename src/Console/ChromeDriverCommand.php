@@ -3,7 +3,6 @@
 namespace Laravel\Dusk\Console;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Utils;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
@@ -193,18 +192,12 @@ class ChromeDriverCommand extends Command
 
         $resource = Utils::tryFopen($archive = $this->directory.'chromedriver.zip', 'w');
 
-        $client = new Client();
-
-        $response = $client->get($url, array_merge([
-            'sink' => $resource,
+        Http::withOptions(array_merge([
             'verify' => $this->option('ssl-no-verify') === false,
-        ], array_filter([
+            'sink' => $resource,
+        ]), array_filter([
             'proxy' => $this->option('proxy'),
-        ])));
-
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
-            throw new Exception("Unable to download ChromeDriver from [{$url}].");
-        }
+        ]))->get($url);
 
         return $archive;
     }
@@ -242,10 +235,8 @@ class ChromeDriverCommand extends Command
      */
     protected function rename($binary, $os)
     {
-        $binary = str_replace(DIRECTORY_SEPARATOR, '/', $binary);
-
-        $newName = Str::contains($binary, '/')
-            ? Str::after(str_replace('chromedriver', 'chromedriver-'.$os, $binary), '/')
+        $newName = Str::contains($binary, DIRECTORY_SEPARATOR)
+            ? Str::after(str_replace('chromedriver', 'chromedriver-'.$os, $binary), DIRECTORY_SEPARATOR)
             : str_replace('chromedriver', 'chromedriver-'.$os, $binary);
 
         rename($this->directory.$binary, $this->directory.$newName);
@@ -313,8 +304,8 @@ class ChromeDriverCommand extends Command
     {
         return Http::withOptions(array_merge([
             'verify' => $this->option('ssl-no-verify') === false,
-        ], array_filter([
+        ]), array_filter([
             'proxy' => $this->option('proxy'),
-        ])))->get($url)->body();
+        ]))->get($url)->body();
     }
 }
