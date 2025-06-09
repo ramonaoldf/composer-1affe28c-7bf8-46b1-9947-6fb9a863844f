@@ -148,7 +148,7 @@ class Browser
         $this->resolver->pageElements(array_merge(
             $page::siteElements(), $page->elements()
         ));
-        
+
         $page->assert($this);
 
         return $this;
@@ -177,7 +177,7 @@ class Browser
 
         return $this;
     }
-    
+
     /**
      * Maximize the browser window.
      *
@@ -239,6 +239,18 @@ class Browser
         }
 
         return $this;
+    }
+
+    /**
+     * Execute a Closure with a scoped browser instance.
+     *
+     * @param  string  $selector
+     * @param  \Closure  $callback
+     * @return $this
+     */
+    public function within($selector, Closure $callback)
+    {
+        return $this->with($selector, $callback);
     }
 
     /**
@@ -328,7 +340,12 @@ class Browser
      */
     public function tinker()
     {
-        eval(\Psy\sh());
+        \Psy\Shell::debug([
+            'browser' => $this,
+            'driver' => $this->driver,
+            'resolver' => $this->resolver,
+            'page' => $this->page,
+        ], $this);
 
         return $this;
     }

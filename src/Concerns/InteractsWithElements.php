@@ -6,7 +6,6 @@ use Illuminate\Support\Str;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\Remote\LocalFileDetector;
-use Facebook\WebDriver\Remote\UselessFileDetector;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 
 trait InteractsWithElements
@@ -71,7 +70,7 @@ trait InteractsWithElements
     {
         $this->ensurejQueryIsAvailable();
 
-        $selector = trim($this->resolver->format("a:contains({$link})"));
+        $selector = addslashes(trim($this->resolver->format("a:contains({$link})")));
 
         $this->driver->executeScript("jQuery.find(\"{$selector}\")[0].click();");
 
@@ -290,11 +289,7 @@ trait InteractsWithElements
     {
         $element = $this->resolver->resolveForAttachment($field);
 
-        if ($this->driver->getCapabilities()->getBrowserName() == 'phantomjs') {
-	        $element->setFileDetector(new UselessFileDetector())->sendKeys($path);
-        } else {
-	        $element->setFileDetector(new LocalFileDetector)->sendKeys($path);
-        }
+        $element->setFileDetector(new LocalFileDetector)->sendKeys($path);
 
         return $this;
     }
