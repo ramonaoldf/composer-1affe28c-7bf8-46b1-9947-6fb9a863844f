@@ -24,4 +24,14 @@ class LoginController
 
         Auth::login($user);
     }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @return Response
+     */
+    public function logout()
+    {
+        Auth::logout();
+    }
 }

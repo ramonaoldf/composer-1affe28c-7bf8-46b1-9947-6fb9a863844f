@@ -13,6 +13,7 @@ class Browser
     use Concerns\InteractsWithAuthentication,
         Concerns\InteractsWithCookies,
         Concerns\InteractsWithElements,
+        Concerns\InteractsWithJavascript,
         Concerns\InteractsWithMouse,
         Concerns\MakesAssertions,
         Concerns\WaitsForElements,
@@ -110,6 +111,18 @@ class Browser
         }
 
         return $this;
+    }
+
+    /**
+     * Browse to the given route.
+     *
+     * @param  string  $route
+     * @param  array  $parameters
+     * @return $this
+     */
+    public function visitRoute($route, $parameters = [])
+    {
+        return $this->visit(route($route, $parameters));
     }
 
     /**
@@ -216,7 +229,7 @@ class Browser
      *
      * @return void
      */
-    protected function ensurejQueryIsAvailable()
+    public function ensurejQueryIsAvailable()
     {
         if ($this->driver->executeScript("return window.jQuery == null")) {
             $this->driver->executeScript(file_get_contents(__DIR__.'/../bin/jquery.js'));
@@ -244,6 +257,29 @@ class Browser
     public function quit()
     {
         $this->driver->quit();
+    }
+
+    /**
+     * Tap the browser into a callback.
+     *
+     * @param  \Closure  $callback
+     * @return $this
+     */
+    public function tap($callback)
+    {
+        $callback($this);
+
+        return $this;
+    }
+
+    /**
+     * Dump the content from the last response.
+     *
+     * @return void
+     */
+    public function dump()
+    {
+        dd($this->driver->getPageSource());
     }
 
     /**

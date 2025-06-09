@@ -52,6 +52,18 @@ trait MakesAssertions
     }
 
     /**
+     * Assert that the current URL path matches the given route.
+     *
+     * @param  string  $route
+     * @param  array  $parameters
+     * @return $this
+     */
+    public function assertRouteIs($route, $parameters = [])
+    {
+        return $this->assertPathIs(route($route, $parameters, false));
+    }
+
+    /**
      * Assert that the given cookie is present.
      *
      * @param  string  $name
@@ -158,6 +170,38 @@ trait MakesAssertions
         PHPUnit::assertFalse(
             Str::contains($element->getText(), $text),
             "Saw unexpected text [{$text}] within element [{$fullSelector}]."
+        );
+
+        return $this;
+    }
+
+    /**
+     * Assert that the given source code is present on the page.
+     *
+     * @param  string  $code
+     * @return $this
+     */
+    public function assertSourceHas($code)
+    {
+        PHPUnit::assertContains(
+            $code, $this->driver->getPageSource(),
+            "Did not find expected source code [{$code}]"
+        );
+
+        return $this;
+    }
+
+    /**
+     * Assert that the given source code is not present on the page.
+     *
+     * @param  string  $code
+     * @return $this
+     */
+    public function assertSourceMissing($code)
+    {
+        PHPUnit::assertNotContains(
+            $code, $this->driver->getPageSource(),
+            "Found unexpected source code [{$code}]"
         );
 
         return $this;
