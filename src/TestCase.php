@@ -34,7 +34,7 @@ abstract class TestCase extends FoundationTestCase
      *
      * @return void
      */
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 
