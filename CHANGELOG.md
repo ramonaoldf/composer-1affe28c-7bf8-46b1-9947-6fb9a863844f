@@ -1,6 +1,18 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/dusk/compare/v5.11.0...5.0)
+## [Unreleased](https://github.com/laravel/dusk/compare/v6.0.0...6.x)
+
+
+## [v6.0.0 (2020-04-14)](https://github.com/laravel/dusk/compare/v5.11.0...v6.0.0)
+
+### Added
+- PHPUnit 9 support ([2770f25](https://github.com/laravel/dusk/commit/2770f256bd0ccd9b4c8a892fb9fb5b134e6f7c3a), [45ae210](https://github.com/laravel/dusk/commit/45ae210a3edd7d2ed3f712cd1aab59037266c21c))
+
+### Changed
+- Dropped support for Laravel 5.7 & 5.8 ([98af698](https://github.com/laravel/dusk/commit/98af6989532ad6ecb420cae8a6e2864335c2dd9a), [e0c173a](https://github.com/laravel/dusk/commit/e0c173af6deaeda6170e017eb3ce225d8d4c5964))
+- Dropped support for PHP 7.1 ([210e03e](https://github.com/laravel/dusk/commit/210e03ec2c121517b99bd6163859bbdc5cce564a))
+- Dropped support for Carbon v1 ([0b880e9](https://github.com/laravel/dusk/commit/0b880e9300257dd08aa25deef3e831a3deb3df44))
+- Bumped minimum Symfony dependencies to 4.3 ([1ee28e1](https://github.com/laravel/dusk/commit/1ee28e1bfcce1de4a3ad83253394d964690602c4))
 
 
 ## [v5.11.0 (2020-03-24)](https://github.com/laravel/dusk/compare/v5.10.0...v5.11.0)
@@ -153,7 +165,7 @@
 ## [v5.1.0 (2019-05-02)](https://github.com/laravel/dusk/compare/v5.0.3...v5.1.0)
 
 ### Added
-- Implement ChromeDriverCommand ([#643](https://github.com/laravel/dusk/pull/643), [60339a5](https://github.com/laravel/dusk/commit/60339a521a1b05e55af7c90b3151557100a0db4d), [#644](https://github.com/laravel/dusk/pull/644)) 
+- Implement ChromeDriverCommand ([#643](https://github.com/laravel/dusk/pull/643), [60339a5](https://github.com/laravel/dusk/commit/60339a521a1b05e55af7c90b3151557100a0db4d), [#644](https://github.com/laravel/dusk/pull/644))
 
 
 ## [v5.0.3 (2019-04-02)](https://github.com/laravel/dusk/compare/v5.0.2...v5.0.3)
