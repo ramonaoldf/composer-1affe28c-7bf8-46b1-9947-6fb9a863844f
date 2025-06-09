@@ -5,10 +5,11 @@ namespace Laravel\Dusk\Concerns;
 use Closure;
 use Exception;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Facebook\WebDriver\Exception\TimeOutException;
-use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\Exception\NoSuchElementException;
 
 trait WaitsForElements
 {
@@ -65,16 +66,18 @@ trait WaitsForElements
     /**
      * Wait for the given text to be visible.
      *
-     * @param  string  $text
+     * @param  array|string  $text
      * @param  int  $seconds
      * @return $this
      * @throws \Facebook\WebDriver\Exception\TimeOutException
      */
     public function waitForText($text, $seconds = null)
     {
+        $text = Arr::wrap($text);
+
         return $this->waitUsing($seconds, 100, function () use ($text) {
             return Str::contains($this->resolver->findOrFail('')->getText(), $text);
-        }, "Waited %s seconds for text [{$text}].");
+        }, "Waited %s seconds for text ['".implode("', '", $text)."'].");
     }
 
     /**

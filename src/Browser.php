@@ -5,6 +5,7 @@ namespace Laravel\Dusk;
 use Closure;
 use BadMethodCallException;
 use Illuminate\Support\Str;
+use Facebook\WebDriver\WebDriverPoint;
 use Illuminate\Support\Traits\Macroable;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\Remote\WebDriverBrowserType;
@@ -17,6 +18,7 @@ class Browser
         Concerns\InteractsWithJavascript,
         Concerns\InteractsWithMouse,
         Concerns\MakesAssertions,
+        Concerns\MakesUrlAssertions,
         Concerns\WaitsForElements,
         Macroable {
             __call as macroCall;
@@ -226,6 +228,22 @@ class Browser
     {
         $this->driver->manage()->window()->setSize(
             new WebDriverDimension($width, $height)
+        );
+
+        return $this;
+    }
+
+    /**
+     * Move the browser window.
+     *
+     * @param  int  $x
+     * @param  int  $y
+     * @return $this
+     */
+    public function move($x, $y)
+    {
+        $this->driver->manage()->window()->setPosition(
+            new WebDriverPoint($x, $y)
         );
 
         return $this;
