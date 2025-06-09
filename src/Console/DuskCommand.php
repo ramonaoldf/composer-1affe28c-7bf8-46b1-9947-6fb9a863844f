@@ -5,7 +5,6 @@ namespace Laravel\Dusk\Console;
 use Dotenv\Dotenv;
 use Illuminate\Console\Command;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 class DuskCommand extends Command
@@ -24,7 +23,7 @@ class DuskCommand extends Command
      */
     protected $description = 'Run the Dusk tests for the application';
 
-    /*
+    /**
      * Indicates if the project has its own PHPUnit configuration.
      *
      * @var boolean
@@ -51,6 +50,8 @@ class DuskCommand extends Command
     public function handle()
     {
         $this->purgeScreenshots();
+
+        $this->purgeConsoleLogs();
 
         $options = array_slice($_SERVER['argv'], 2);
 
@@ -97,6 +98,22 @@ class DuskCommand extends Command
         $files = Finder::create()->files()
                         ->in(base_path('tests/Browser/screenshots'))
                         ->name('failure-*');
+
+        foreach ($files as $file) {
+            @unlink($file->getRealPath());
+        }
+    }
+
+    /**
+     * Purge the console logs.
+     *
+     * @return void
+     */
+    protected function purgeConsoleLogs()
+    {
+        $files = Finder::create()->files()
+            ->in(base_path('tests/Browser/console'))
+            ->name('*.log');
 
         foreach ($files as $file) {
             @unlink($file->getRealPath());
