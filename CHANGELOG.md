@@ -1,4 +1,16 @@
-# Release Notes for 4.0.x
+# Release Notes
+
+## [v5.0.0 (2019-02-12)](https://github.com/laravel/dusk/compare/v4.0.5...v5.0.0)
+
+### Added
+- Support PHPUnit 8 ([788e79c](https://github.com/laravel/dusk/commit/788e79c4713a5706eeafaf7270986a71a4ed43be))
+- Support Carbon 2 ([85cfc50](https://github.com/laravel/dusk/commit/85cfc50e126a3835428577052cc0660d1c3b639e))
+- Support Laravel 5.8 ([5b2e9aa](https://github.com/laravel/dusk/commit/5b2e9aa9e4a124f4c4878f65fb644101de1644e7))
+
+### Changed
+- Update minimum Laravel version ([fcb2226](https://github.com/laravel/dusk/commit/fcb2226a524f47b51b9b49316d87bc51738733d7))
+- Update Symfony dependencies to latest version ([788e79c](https://github.com/laravel/dusk/commit/788e79c4713a5706eeafaf7270986a71a4ed43be))
+- Prefer stable dependencies ([fdb2fd4](https://github.com/laravel/dusk/commit/fdb2fd4b2a2e787b08cf44649c4eef84837324ca))
 
 ## [v4.0.0 (2018-08-11)](https://github.com/laravel/dusk/compare/v3.0.10...v4.0.0)
 
